@@ -38,3 +38,19 @@ export const KPI_TARGETS: Record<MemberLevel, KpiTarget> = {
 	middle: { label: 'Middle', spPerMonth: 70, completionRate: 85, bugRateMax: 10, timeSpentMinHours: 120 },
 	senior: { label: 'Senior', spPerMonth: 90, completionRate: 90, bugRateMax: 5, timeSpentMinHours: 140 },
 };
+
+export const KPI_DESIGNER_TARGETS: Record<MemberLevel, KpiTarget> = {
+	intern: { label: 'Intern', spPerMonth: 25, completionRate: 65, bugRateMax: 30, timeSpentMinHours: 80 },
+	fresher: { label: 'Fresher', spPerMonth: 25, completionRate: 65, bugRateMax: 30, timeSpentMinHours: 80 },
+	junior: { label: 'Junior', spPerMonth: 30, completionRate: 70, bugRateMax: 25, timeSpentMinHours: 100 },
+	middle: { label: 'Middle', spPerMonth: 70, completionRate: 80, bugRateMax: 20, timeSpentMinHours: 120 },
+	senior: { label: 'Senior', spPerMonth: 90, completionRate: 85, bugRateMax: 15, timeSpentMinHours: 140 },
+};
+
+export const KPI_BA_TARGETS: Record<MemberLevel, KpiTarget> = {
+	intern: { label: 'Intern', spPerMonth: 25, completionRate: 65, bugRateMax: 30, timeSpentMinHours: 60 },
+	fresher: { label: 'Fresher', spPerMonth: 25, completionRate: 65, bugRateMax: 30, timeSpentMinHours: 60 },
+	junior: { label: 'Junior', spPerMonth: 30, completionRate: 70, bugRateMax: 25, timeSpentMinHours: 80 },
+	middle: { label: 'Middle', spPerMonth: 70, completionRate: 80, bugRateMax: 20, timeSpentMinHours: 100 },
+	senior: { label: 'Senior', spPerMonth: 90, completionRate: 85, bugRateMax: 15, timeSpentMinHours: 120 },
+};

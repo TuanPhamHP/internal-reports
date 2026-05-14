@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="px-3 py-3 max-w-7xl mx-auto"
+		class="px-6 py-6 max-w-7xl mx-auto"
 		@dragenter.prevent="dragCounter++"
 		@dragleave="dragCounter--"
 		@dragover.prevent

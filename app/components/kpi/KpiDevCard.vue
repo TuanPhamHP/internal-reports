@@ -36,6 +36,11 @@
 						class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
 						>BA</span
 					>
+					<span
+						v-if="dev.role === 'designer'"
+						class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300"
+						>Designer</span
+					>
 				</div>
 			</div>
 			<div v-if="allDevs.length > 0" class="shrink-0 text-right">
@@ -49,7 +54,7 @@
 
 		<!-- Body -->
 		<div v-if="open" class="border-t border-[#dbe0e6] dark:border-gray-700 px-5 py-5 flex flex-col gap-6">
-			<!-- A: Jira data — dev và BA -->
+			<!-- A: Jira data — dev, designer & ba -->
 			<div v-if="dev.role !== 'tester'">
 				<h4 class="text-xs font-bold text-[#617289] dark:text-gray-400 uppercase tracking-wider mb-3">
 					A — Dữ liệu Jira
@@ -150,7 +155,7 @@
 					Công thức tính điểm
 				</h4>
 
-				<!-- Objective breakdown table — dev và BA -->
+				<!-- Objective breakdown table — dev, designer & ba -->
 				<div v-if="dev.role !== 'tester'">
 					<p class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-2">
 						A — Điểm khách quan ({{ weights.objective }}%)
@@ -317,6 +322,7 @@
 		scoreColorClass,
 		scoreBgClass,
 	} from '~/composables/useKpiCalculator';
+	import { useKpiTargets } from '~/composables/useKpiTargets';
 	import type { KpiDev, KpiWeights } from '~/models/kpi';
 
 	const props = defineProps<{
@@ -328,6 +334,9 @@
 		'update:dev': [value: KpiDev];
 		remove: [];
 	}>();
+
+	const { getTargetsForRole } = useKpiTargets();
+	const targets = computed(() => getTargetsForRole(props.dev.role));
 
 	const open = ref(false);
 
@@ -347,11 +356,11 @@
 	const completionRate = computed(() =>
 		props.dev.jira.totalTasks > 0 ? Math.round((props.dev.jira.doneTasks / props.dev.jira.totalTasks) * 100) : 0,
 	);
-	const objectiveScore = computed(() => calcObjectiveScore(props.dev, props.allDevs, props.weights));
+	const objectiveScore = computed(() => calcObjectiveScore(props.dev, props.allDevs, props.weights, targets.value));
 	const subjectiveScore = computed(() => calcSubjectiveScore(props.dev, props.weights));
-	const totalScore = computed(() => calcDevTotalScore(props.dev, props.allDevs, props.weights));
+	const totalScore = computed(() => calcDevTotalScore(props.dev, props.allDevs, props.weights, targets.value));
 
-	const objBd = computed(() => calcObjBreakdown(props.dev));
+	const objBd = computed(() => calcObjBreakdown(props.dev, targets.value));
 	const subRows = computed(() => {
 		const s = props.dev.subjective;
 		const w = props.weights;
@@ -359,28 +368,36 @@
 		return [
 			{
 				key: 'response',
-				label: role === 'ba' ? 'Giao tiếp & phản hồi stakeholder' : 'Phản hồi & giao tiếp',
+				label: role === 'ba' ? 'Giao tiếp & phản hồi stakeholder'
+					: role === 'designer' ? 'Tiến độ & đúng hẹn'
+					: 'Phản hồi & giao tiếp',
 				raw: s.response,
 				score: ((s.response - 1) / 9) * 100,
 				weight: w.subResponse,
 			},
 			{
 				key: 'quality',
-				label: role === 'tester' ? 'Chất lượng test case' : role === 'ba' ? 'Chất lượng yêu cầu & giải pháp' : 'Chất lượng code',
+				label: role === 'tester' ? 'Chất lượng test case'
+					: role === 'ba' ? 'Chất lượng yêu cầu & giải pháp'
+					: role === 'designer' ? 'Chất lượng thiết kế'
+					: 'Chất lượng code',
 				raw: s.quality,
 				score: ((s.quality - 1) / 9) * 100,
 				weight: w.subQuality,
 			},
 			{
 				key: 'bugRate',
-				label: role === 'tester' ? 'Khả năng tìm bug' : role === 'ba' ? 'Tỉ lệ rework từ yêu cầu' : 'Bug rate',
+				label: role === 'tester' ? 'Khả năng tìm bug'
+					: role === 'ba' ? 'Tỉ lệ rework từ yêu cầu'
+					: role === 'designer' ? 'Chất lượng handoff'
+					: 'Bug rate',
 				raw: s.bugRate,
 				score: ((s.bugRate - 1) / 9) * 100,
 				weight: w.subBugRate,
 			},
 			{
 				key: 'teamwork',
-				label: 'Teamwork & phối hợp',
+				label: role === 'designer' ? 'Sáng tạo & phối hợp' : 'Teamwork & phối hợp',
 				raw: s.teamwork,
 				score: ((s.teamwork - 1) / 9) * 100,
 				weight: w.subTeamwork,

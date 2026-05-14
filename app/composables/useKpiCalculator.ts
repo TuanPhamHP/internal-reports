@@ -1,5 +1,6 @@
 import type { KpiDev, KpiDevJira, KpiDevResult, KpiManager, KpiManagerResult, KpiState, KpiWeights } from '~/models/kpi';
 import { KPI_TARGETS } from '~/models/index';
+import type { KpiTarget, MemberLevel } from '~/models/index';
 
 // Clamp actual/target ratio to 0–100 (exceeding target = 100, not more)
 function absScore(actual: number, target: number): number {
@@ -26,11 +27,11 @@ export function calcEstimationAccuracy(jira: KpiDevJira): number {
 
 // Piecewise linear tiers mapping SP achievement % → efficiency score
 // Each entry means: up to `threshold` fraction of target, score scales linearly to `score`
-const SP_EFF_TIERS = [
-	{ threshold: 0.4, score: 20,  label: 'Rất thấp (<40%)' },
-	{ threshold: 0.6, score: 40,  label: 'Thấp (40–60%)' },
-	{ threshold: 0.8, score: 60,  label: 'Trung bình (60–80%)' },
-	{ threshold: 1.0, score: 80,  label: 'Khá (80–100%)' },
+export const SP_EFF_TIERS = [
+	{ threshold: 0.4, score: 20, label: 'Rất thấp (<40%)' },
+	{ threshold: 0.6, score: 40, label: 'Thấp (40–60%)' },
+	{ threshold: 0.8, score: 60, label: 'Trung bình (60–80%)' },
+	{ threshold: 1.0, score: 80, label: 'Khá (80–100%)' },
 ] as const;
 
 export type EffTierLabel = typeof SP_EFF_TIERS[number]['label'] | 'Đạt SP, chờ time' | 'Đạt KPI ✓';
@@ -61,8 +62,8 @@ export interface SubBreakdown {
 	response: number; quality: number; bugRate: number; teamwork: number;
 }
 
-export function calcObjBreakdown(dev: KpiDev): ObjBreakdown {
-	const target = KPI_TARGETS[dev.level];
+export function calcObjBreakdown(dev: KpiDev, targets: Record<MemberLevel, KpiTarget> = KPI_TARGETS): ObjBreakdown {
+	const target = targets[dev.level];
 	const actualCompRate = dev.jira.totalTasks > 0 ? (dev.jira.doneTasks / dev.jira.totalTasks) * 100 : 0;
 	const spPct   = target.spPerMonth > 0 ? dev.jira.sp / target.spPerMonth : 0;
 	const metSP   = spPct >= 1;
@@ -109,8 +110,13 @@ export function calcSubBreakdown(dev: KpiDev): SubBreakdown {
 	};
 }
 
-export function calcObjectiveScore(dev: KpiDev, _allDevs: KpiDev[], weights: KpiWeights): number {
-	const b = calcObjBreakdown(dev);
+export function calcObjectiveScore(
+	dev: KpiDev,
+	_allDevs: KpiDev[],
+	weights: KpiWeights,
+	targets: Record<MemberLevel, KpiTarget> = KPI_TARGETS,
+): number {
+	const b = calcObjBreakdown(dev, targets);
 	return (
 		b.spScore   * (weights.objSp        / 100) +
 		b.effScore  * (weights.objEfficiency / 100) +
@@ -128,10 +134,15 @@ export function calcSubjectiveScore(dev: KpiDev, weights: KpiWeights): number {
 	);
 }
 
-export function calcDevTotalScore(dev: KpiDev, allDevs: KpiDev[], weights: KpiWeights): number {
+export function calcDevTotalScore(
+	dev: KpiDev,
+	allDevs: KpiDev[],
+	weights: KpiWeights,
+	targets: Record<MemberLevel, KpiTarget> = KPI_TARGETS,
+): number {
 	const sub = calcSubjectiveScore(dev, weights);
 	if (dev.role === 'tester') return sub;
-	const obj = calcObjectiveScore(dev, allDevs, weights);
+	const obj = calcObjectiveScore(dev, allDevs, weights, targets);
 	return obj * (weights.objective / 100) + sub * (weights.subjective / 100);
 }
 
@@ -144,19 +155,25 @@ export function calcManagerScore(manager: KpiManager, weights: KpiWeights): numb
 	);
 }
 
-export function calcAllResults(state: KpiState): {
+export function calcAllResults(
+	state: KpiState,
+	getTargets: (role: string) => Record<MemberLevel, KpiTarget> = () => KPI_TARGETS,
+): {
 	devResults: KpiDevResult[];
 	managerResult: KpiManagerResult;
 } {
-	const devResults: KpiDevResult[] = state.devs.map(dev => ({
-		dev,
-		objectiveScore: calcObjectiveScore(dev, state.devs, state.weights),
-		subjectiveScore: calcSubjectiveScore(dev, state.weights),
-		totalScore: calcDevTotalScore(dev, state.devs, state.weights),
-		weightedScore: 0,
-		contribution: 0,
-		bonusAmount: 0,
-	}));
+	const devResults: KpiDevResult[] = state.devs.map(dev => {
+		const t = getTargets(dev.role);
+		return {
+			dev,
+			objectiveScore: calcObjectiveScore(dev, state.devs, state.weights, t),
+			subjectiveScore: calcSubjectiveScore(dev, state.weights),
+			totalScore: calcDevTotalScore(dev, state.devs, state.weights, t),
+			weightedScore: 0,
+			contribution: 0,
+			bonusAmount: 0,
+		};
+	});
 
 	devResults.forEach(r => {
 		r.weightedScore = r.totalScore * (r.dev.coefficient ?? 1);

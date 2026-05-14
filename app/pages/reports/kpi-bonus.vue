@@ -1,5 +1,5 @@
 <template>
-	<div class="px-3 py-3 max-w-7xl mx-auto min-h-screen dark:bg-gray-950">
+	<div class="px-6 py-6 max-w-7xl mx-auto">
 		<!-- Header -->
 		<div class="mb-6 flex items-end justify-between gap-4 flex-wrap">
 			<div>

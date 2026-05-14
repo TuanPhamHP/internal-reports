@@ -136,6 +136,11 @@
 										class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
 										>BA</span
 									>
+									<span
+										v-if="r.dev.role === 'designer'"
+										class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300"
+										>Designer</span
+									>
 								</div>
 							</td>
 							<td class="px-5 py-3 text-center text-sm font-medium text-[#111418] dark:text-white">
@@ -272,7 +277,7 @@
 				</div>
 
 				<div class="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-6">
-					<!-- Jira metrics — dev và BA -->
+					<!-- Jira metrics — dev, designer & ba -->
 					<div v-if="r.dev.role !== 'tester'">
 						<p class="text-xs font-bold text-[#617289] dark:text-gray-400 uppercase tracking-wider mb-3">
 							Dữ liệu Jira
@@ -460,6 +465,7 @@
 		scoreBgClass,
 		scoreColorClass,
 	} from '~/composables/useKpiCalculator';
+	import { useKpiTargets } from '~/composables/useKpiTargets';
 	import type { KpiState } from '~/models/kpi';
 
 	const props = defineProps<{ state: KpiState }>();
@@ -468,7 +474,8 @@
 		'import-json': [file: File];
 	}>();
 
-	const results = computed(() => calcAllResults(props.state));
+	const { getTargetsForRole } = useKpiTargets();
+	const results = computed(() => calcAllResults(props.state, getTargetsForRole));
 	const sortedDevResults = computed(() => [...results.value.devResults].sort((a, b) => b.totalScore - a.totalScore));
 	const topDev = computed(() => sortedDevResults.value[0]);
 
@@ -477,12 +484,29 @@
 		() => props.state.project.totalBonus * ((100 - props.state.project.devBonusRatio) / 100),
 	);
 
-	function subjectiveCriteria(role: 'dev' | 'tester' | 'ba') {
+	function subjectiveCriteria(role: 'dev' | 'tester' | 'ba' | 'designer') {
 		return [
-			{ key: 'response', label: role === 'ba' ? 'Giao tiếp & phản hồi stakeholder' : 'Phản hồi & giao tiếp' },
-			{ key: 'quality', label: role === 'tester' ? 'Chất lượng test case' : role === 'ba' ? 'Chất lượng yêu cầu & giải pháp' : 'Chất lượng code' },
-			{ key: 'bugRate', label: role === 'tester' ? 'Khả năng tìm bug' : role === 'ba' ? 'Tỉ lệ rework từ yêu cầu' : 'Bug rate' },
-			{ key: 'teamwork', label: 'Teamwork & phối hợp' },
+			{
+				key: 'response',
+				label: role === 'ba' ? 'Giao tiếp & phản hồi stakeholder'
+					: role === 'designer' ? 'Tiến độ & đúng hẹn'
+					: 'Phản hồi & giao tiếp',
+			},
+			{
+				key: 'quality',
+				label: role === 'tester' ? 'Chất lượng test case'
+					: role === 'ba' ? 'Chất lượng yêu cầu & giải pháp'
+					: role === 'designer' ? 'Chất lượng thiết kế'
+					: 'Chất lượng code',
+			},
+			{
+				key: 'bugRate',
+				label: role === 'tester' ? 'Khả năng tìm bug'
+					: role === 'ba' ? 'Tỉ lệ rework từ yêu cầu'
+					: role === 'designer' ? 'Chất lượng handoff'
+					: 'Bug rate',
+			},
+			{ key: 'teamwork', label: role === 'designer' ? 'Sáng tạo & phối hợp' : 'Teamwork & phối hợp' },
 		];
 	}
 

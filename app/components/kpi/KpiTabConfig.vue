@@ -82,6 +82,7 @@
 						<option value="dev">Dev</option>
 						<option value="tester">Tester</option>
 						<option value="ba">BA</option>
+						<option value="designer">Designer</option>
 					</select>
 					<select
 						v-model="dev.level"
