@@ -54,7 +54,7 @@ export interface KpiDevSubjective {
 export interface KpiDev {
 	id: string;
 	name: string;
-	role: 'dev' | 'tester';
+	role: 'dev' | 'tester' | 'ba';
 	level: MemberLevel;
 	monthsInProject: number;
 	coefficient: number; // hệ số cống hiến, default 1.0

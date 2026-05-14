@@ -31,6 +31,11 @@
 						class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
 						>Tester</span
 					>
+					<span
+						v-if="dev.role === 'ba'"
+						class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
+						>BA</span
+					>
 				</div>
 			</div>
 			<div v-if="allDevs.length > 0" class="shrink-0 text-right">
@@ -44,7 +49,7 @@
 
 		<!-- Body -->
 		<div v-if="open" class="border-t border-[#dbe0e6] dark:border-gray-700 px-5 py-5 flex flex-col gap-6">
-			<!-- A: Jira data — chỉ hiển thị cho dev -->
+			<!-- A: Jira data — dev và BA -->
 			<div v-if="dev.role !== 'tester'">
 				<h4 class="text-xs font-bold text-[#617289] dark:text-gray-400 uppercase tracking-wider mb-3">
 					A — Dữ liệu Jira
@@ -58,7 +63,7 @@
 							type="number"
 							min="0"
 							step="0.01"
-							class="border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-[#111418] dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							class="border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-900 text-[#111418] dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
 						/>
 					</div>
 				</div>
@@ -101,11 +106,13 @@
 						@update:note="updateNote('response', $event)"
 					/>
 					<KpiSlider
-						:label="dev.role === 'tester' ? 'Chất lượng test case' : 'Chất lượng code'"
+						:label="dev.role === 'tester' ? 'Chất lượng test case' : dev.role === 'ba' ? 'Chất lượng yêu cầu & giải pháp' : 'Chất lượng code'"
 						:description="
 							dev.role === 'tester'
 								? 'Mức độ rõ ràng, đầy đủ và chính xác của test case'
-								: 'Code review, readability, best practices'
+								: dev.role === 'ba'
+									? 'Tính rõ ràng, đầy đủ và khả thi của tài liệu yêu cầu'
+									: 'Code review, readability, best practices'
 						"
 						:model-value="dev.subjective.quality"
 						:note="dev.subjective.notes.quality"
@@ -113,11 +120,13 @@
 						@update:note="updateNote('quality', $event)"
 					/>
 					<KpiSlider
-						:label="dev.role === 'tester' ? 'Khả năng tìm bug' : 'Bug rate'"
+						:label="dev.role === 'tester' ? 'Khả năng tìm bug' : dev.role === 'ba' ? 'Tỉ lệ rework từ yêu cầu' : 'Bug rate'"
 						:description="
 							dev.role === 'tester'
 								? '10 = phát hiện nhiều bug quan trọng; 1 = bỏ sót nhiều bug'
-								: '10 = không có bug; 1 = nhiều bug nghiêm trọng'
+								: dev.role === 'ba'
+									? '10 = ít rework; 1 = yêu cầu thường xuyên phải làm lại'
+									: '10 = không có bug; 1 = nhiều bug nghiêm trọng'
 						"
 						:model-value="dev.subjective.bugRate"
 						:note="dev.subjective.notes.bugRate"
@@ -141,7 +150,7 @@
 					Công thức tính điểm
 				</h4>
 
-				<!-- Objective breakdown table — chỉ dev -->
+				<!-- Objective breakdown table — dev và BA -->
 				<div v-if="dev.role !== 'tester'">
 					<p class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-2">
 						A — Điểm khách quan ({{ weights.objective }}%)
@@ -149,7 +158,7 @@
 					<div class="overflow-x-auto">
 						<table class="w-full text-xs border-collapse">
 							<thead>
-								<tr class="bg-[#f0f2f4] dark:bg-gray-700 text-[#617289] dark:text-gray-400">
+								<tr class="bg-[#f0f2f4] dark:bg-gray-900 text-[#617289] dark:text-gray-300">
 									<th class="px-2 py-1.5 text-left font-semibold">Tiêu chí</th>
 									<th class="px-2 py-1.5 text-right font-semibold">Thực tế</th>
 									<th class="px-2 py-1.5 text-right font-semibold">Target</th>
@@ -236,7 +245,7 @@
 				<div class="overflow-x-auto">
 					<table class="w-full text-xs border-collapse">
 						<thead>
-							<tr class="bg-[#f0f2f4] dark:bg-gray-700 text-[#617289] dark:text-gray-400">
+							<tr class="bg-[#f0f2f4] dark:bg-gray-900 text-[#617289] dark:text-gray-300">
 								<th class="px-2 py-1.5 text-left font-semibold">Tiêu chí</th>
 								<th class="px-2 py-1.5 text-right font-semibold">Slider (1–10)</th>
 								<th class="px-2 py-1.5 text-right font-semibold">Điểm</th>
@@ -346,32 +355,32 @@
 	const subRows = computed(() => {
 		const s = props.dev.subjective;
 		const w = props.weights;
-		const isTester = props.dev.role === 'tester';
+		const role = props.dev.role;
 		return [
 			{
 				key: 'response',
-				label: 'Phản hồi & giao tiếp',
+				label: role === 'ba' ? 'Giao tiếp & phản hồi stakeholder' : 'Phản hồi & giao tiếp',
 				raw: s.response,
 				score: ((s.response - 1) / 9) * 100,
 				weight: w.subResponse,
 			},
 			{
 				key: 'quality',
-				label: isTester ? 'Chất lượng test case' : 'Chất lượng code',
+				label: role === 'tester' ? 'Chất lượng test case' : role === 'ba' ? 'Chất lượng yêu cầu & giải pháp' : 'Chất lượng code',
 				raw: s.quality,
 				score: ((s.quality - 1) / 9) * 100,
 				weight: w.subQuality,
 			},
 			{
 				key: 'bugRate',
-				label: isTester ? 'Khả năng tìm bug' : 'Bug rate',
+				label: role === 'tester' ? 'Khả năng tìm bug' : role === 'ba' ? 'Tỉ lệ rework từ yêu cầu' : 'Bug rate',
 				raw: s.bugRate,
 				score: ((s.bugRate - 1) / 9) * 100,
 				weight: w.subBugRate,
 			},
 			{
 				key: 'teamwork',
-				label: 'Teamwork',
+				label: 'Teamwork & phối hợp',
 				raw: s.teamwork,
 				score: ((s.teamwork - 1) / 9) * 100,
 				weight: w.subTeamwork,

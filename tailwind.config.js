@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-	darkMode: false,
+	darkMode: 'media',
 	content: ['./components/**/*.{vue,js,ts}', './pages/**/*.{vue,js,ts}', './layouts/**/*.{vue,js,ts}', './app.vue'],
 	safelist: [
 		'bg-green-100', 'text-green-700', 'bg-green-900/40', 'text-green-300', 'bg-green-500', 'text-green-600', 'text-green-400',

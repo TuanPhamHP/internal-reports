@@ -1,5 +1,5 @@
 <template>
-	<div class="px-3 py-3 max-w-7xl mx-auto">
+	<div class="px-3 py-3 max-w-7xl mx-auto min-h-screen dark:bg-gray-950">
 		<!-- Header -->
 		<div class="mb-6 flex items-end justify-between gap-4 flex-wrap">
 			<div>
@@ -79,9 +79,9 @@
 
 	const activeTab = ref<'config' | 'devs' | 'manager' | 'results'>('config');
 
-	const tabs = [
+	const tabs: { key: 'config' | 'devs' | 'manager' | 'results'; label: string }[] = [
 		{ key: 'config', label: 'Cấu hình' },
-		{ key: 'devs', label: 'Đánh giá Devs' },
+		{ key: 'devs', label: 'Đánh giá Nhân sự' },
 		{ key: 'manager', label: 'Đánh giá Quản lý' },
 		{ key: 'results', label: 'Kết quả' },
 	];

@@ -10,7 +10,7 @@
 					type="number"
 					min="0"
 					max="100"
-					class="w-20 border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-700 text-[#111418] dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
+					class="w-20 border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-900 text-[#111418] dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
 				/>
 				<span class="text-sm text-[#617289] dark:text-gray-400">%</span>
 			</div>

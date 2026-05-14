@@ -8,6 +8,7 @@ Route `/reports/kpi-bonus` — tính KPI thưởng dự án, hoàn toàn client-
 
 - **Dev** — kết hợp điểm khách quan (Jira) + điểm chủ quan (PM nhập tay)
 - **Tester** — chỉ điểm chủ quan (không log Jira), tổng điểm = 100% subjective
+- **BA** — chỉ điểm chủ quan (không log Jira), tổng điểm = 100% subjective
 - **Quản lý** — đánh giá theo 4 nhóm tổ chức/tiến độ/chất lượng/team
 
 Kết quả: điểm có hệ số → % đóng góp → phân bổ tiền thưởng.
@@ -58,17 +59,17 @@ export interface KpiDevJira {
 }
 
 export interface KpiDevSubjective {
-  response: number; // 1–10
-  quality: number;  // 1–10 | Dev: chất lượng code | Tester: chất lượng test case
-  bugRate: number;  // 1–10 | Dev: bug rate (10 = ít bug) | Tester: khả năng tìm bug (10 = giỏi)
-  teamwork: number; // 1–10
+  response: number; // 1–10 | Dev/Tester: Phản hồi & giao tiếp | BA: Giao tiếp & phản hồi stakeholder
+  quality: number;  // 1–10 | Dev: chất lượng code | Tester: chất lượng test case | BA: Chất lượng yêu cầu & giải pháp
+  bugRate: number;  // 1–10 | Dev: bug rate (10=ít bug) | Tester: khả năng tìm bug | BA: Tỉ lệ rework từ yêu cầu (10=ít rework)
+  teamwork: number; // 1–10 | Tất cả: Teamwork & phối hợp
   notes: { response: string; quality: string; bugRate: string; teamwork: string };
 }
 
 export interface KpiDev {
   id: string;
   name: string;
-  role: 'dev' | 'tester';
+  role: 'dev' | 'tester' | 'ba';
   level: MemberLevel;
   monthsInProject: number;
   coefficient: number; // hệ số cống hiến, default 1.0 — nhân vào totalScore khi tính contribution
@@ -139,7 +140,7 @@ objectiveScore = spScore × (objSp/100)
               + compScore × (objCompletion/100)
 ```
 
-### Điểm chủ quan — Dev & Tester
+### Điểm chủ quan — Dev, Tester & BA
 
 ```
 norm(val) = (val - 1) / 9 × 100   // chuẩn hoá slider 1–10 → 0–100
@@ -150,9 +151,14 @@ subjectiveScore = norm(response) × (subResponse/100)
                 + norm(teamwork) × (subTeamwork/100)
 ```
 
-Với **tester**, label hiển thị khác nhưng cách tính giống hệt:
-- `quality` → "Chất lượng test case"
-- `bugRate` → "Khả năng tìm bug" (10 = phát hiện nhiều bug quan trọng)
+Labels khác nhau theo role nhưng công thức tính hoàn toàn giống nhau:
+
+| Slot | Dev | Tester | BA |
+|---|---|---|---|
+| response | Phản hồi & giao tiếp | Phản hồi & giao tiếp | Giao tiếp & phản hồi stakeholder |
+| quality | Chất lượng code | Chất lượng test case | Chất lượng yêu cầu & giải pháp |
+| bugRate | Bug rate (10=ít bug) | Khả năng tìm bug (10=nhiều) | Tỉ lệ rework từ yêu cầu (10=ít) |
+| teamwork | Teamwork & phối hợp | Teamwork & phối hợp | Teamwork & phối hợp |
 
 ### Điểm tổng
 
@@ -160,7 +166,7 @@ Với **tester**, label hiển thị khác nhưng cách tính giống hệt:
 // Dev
 totalScore = objectiveScore × (objective/100) + subjectiveScore × (subjective/100)
 
-// Tester — bỏ qua objective hoàn toàn
+// Tester & BA — bỏ qua objective hoàn toàn
 totalScore = subjectiveScore
 ```
 
@@ -194,8 +200,8 @@ jira.sp = sum(doneRows, r => parseFloat(r['Custom field (Story Points)']));
 ### KpiTabConfig.vue — Tab 1
 
 - Thông tin dự án (tên, kỳ, tổng thưởng, tỉ lệ dev/manager, tên quản lý)
-- Danh sách thành viên: mỗi row gồm **Tên | Role (Dev/Tester) | Level | Số tháng | Hệ số | Xóa**
-- Import Jira CSV tự động điền data (chỉ áp dụng cho dev — tester không cần)
+- Danh sách thành viên: mỗi row gồm **Tên | Role (Dev/Tester/BA) | Level | Số tháng | Hệ số | Xóa**
+- Import Jira CSV tự động điền data (chỉ áp dụng cho dev — tester & BA không cần)
 - Cấu hình trọng số qua `KpiWeightConfig`
 
 ### KpiTabDevs.vue — Tab 2
@@ -218,11 +224,16 @@ Mỗi thành viên là `KpiDevCard` (accordion).
 - Section B: 4 slider với labels tester (Chất lượng test case, Khả năng tìm bug)
 - Section C: chỉ Subjective table + dòng tổng `subjectiveScore × 100%`
 
+**BA card:**
+- Banner tím thay section Jira: "BA — không tính điểm khách quan"
+- Section B: 4 slider với labels BA (Giao tiếp & phản hồi stakeholder, Chất lượng yêu cầu & giải pháp, Tỉ lệ rework từ yêu cầu, Teamwork & phối hợp)
+- Section C: chỉ Subjective table + dòng tổng `subjectiveScore × 100%`
+
 ### KpiTabResults.vue — Tab 4
 
 Bảng phân bổ thưởng gồm: Tên | Level/Role badge | Điểm KQ | Điểm CQ | Điểm Tổng | **Hệ số** | **Điểm HS** | % Đóng góp | Thưởng
 
-- Tester: cột Điểm KQ hiển thị `—`
+- Tester / BA: cột Điểm KQ hiển thị `—`, Jira section thay bằng banner màu tương ứng
 - Hàng có điểm cao nhất được highlight xanh nhạt
 - Đánh giá chi tiết từng người in riêng trang (break-before: page)
 

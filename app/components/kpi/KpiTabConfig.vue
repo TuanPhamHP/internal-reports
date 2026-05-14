@@ -73,18 +73,19 @@
 						@input="dev.name = ($event.target as HTMLInputElement).value"
 						type="text"
 						placeholder="Tên dev"
-						class="flex-1 border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-[#111418] dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="flex-1 border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-900 text-[#111418] dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
 					/>
 					<select
 						v-model="dev.role"
-						class="border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-700 text-[#111418] dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-900 text-[#111418] dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
 					>
 						<option value="dev">Dev</option>
 						<option value="tester">Tester</option>
+						<option value="ba">BA</option>
 					</select>
 					<select
 						v-model="dev.level"
-						class="border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-700 text-[#111418] dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm bg-white dark:bg-gray-900 text-[#111418] dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
 					>
 						<option value="intern">Intern</option>
 						<option value="fresher">Fresher</option>
@@ -367,6 +368,6 @@ function clearParents() {
 }
 
 const inputClass = {
-	class: 'border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-[#111418] dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500',
+	class: 'border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 text-[#111418] dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500',
 };
 </script>

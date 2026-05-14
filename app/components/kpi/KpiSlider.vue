@@ -36,7 +36,7 @@
 			@input="$emit('update:note', ($event.target as HTMLTextAreaElement).value)"
 			rows="2"
 			placeholder="Ghi chú..."
-			class="text-xs border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-[#111418] dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+			class="text-xs border border-[#dbe0e6] dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-900 text-[#111418] dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
 		/>
 	</div>
 </template>

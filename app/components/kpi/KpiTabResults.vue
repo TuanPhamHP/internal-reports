@@ -10,7 +10,7 @@
 			<div class="px-6 py-5 flex flex-col gap-3">
 				<div v-for="r in results.devResults" :key="r.dev.id" class="flex items-center gap-3">
 					<span class="text-sm font-semibold w-28 truncate text-[#111418] dark:text-white">{{ r.dev.name }}</span>
-					<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-700 h-5 rounded-full overflow-hidden">
+					<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-800 h-5 rounded-full overflow-hidden">
 						<div
 							class="h-full rounded-full transition-all flex items-center pl-2"
 							:class="scoreBarClass(r.totalScore)"
@@ -28,7 +28,7 @@
 					<span class="text-sm font-semibold w-28 truncate text-[#111418] dark:text-white">
 						{{ state.project.managerName || 'Quản lý' }}
 					</span>
-					<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-700 h-5 rounded-full overflow-hidden">
+					<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-800 h-5 rounded-full overflow-hidden">
 						<div
 							class="h-full rounded-full transition-all flex items-center pl-2"
 							:class="scoreBarClass(results.managerResult.totalScore)"
@@ -130,6 +130,11 @@
 										v-if="r.dev.role === 'tester'"
 										class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
 										>Tester</span
+									>
+									<span
+										v-if="r.dev.role === 'ba'"
+										class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
+										>BA</span
 									>
 								</div>
 							</td>
@@ -267,8 +272,8 @@
 				</div>
 
 				<div class="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-6">
-					<!-- Jira metrics -->
-					<div>
+					<!-- Jira metrics — dev và BA -->
+					<div v-if="r.dev.role !== 'tester'">
 						<p class="text-xs font-bold text-[#617289] dark:text-gray-400 uppercase tracking-wider mb-3">
 							Dữ liệu Jira
 						</p>
@@ -317,6 +322,12 @@
 							</tbody>
 						</table>
 					</div>
+					<!-- Tester: no Jira -->
+					<div v-else class="flex items-center">
+						<div class="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-4 py-3 text-xs text-amber-700 dark:text-amber-300 w-full">
+							Tester — không tính điểm khách quan. Điểm tổng = 100% đánh giá chủ quan.
+						</div>
+					</div>
 
 					<!-- Subjective scores -->
 					<div>
@@ -329,7 +340,7 @@
 									<td class="py-1.5 text-[#617289] dark:text-gray-400">{{ s.label }}</td>
 									<td class="py-1.5 text-right">
 										<div class="flex items-center justify-end gap-2">
-											<div class="w-20 bg-[#f0f2f4] dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
+											<div class="w-20 bg-[#f0f2f4] dark:bg-gray-800 h-1.5 rounded-full overflow-hidden">
 												<div
 													class="h-full rounded-full"
 													:class="
@@ -369,9 +380,9 @@
 
 				<!-- Score bar summary -->
 				<div class="px-6 pb-5 flex flex-col gap-2">
-					<div class="flex items-center gap-3">
+					<div v-if="r.dev.role !== 'tester'" class="flex items-center gap-3">
 						<span class="text-xs w-28 text-[#617289] dark:text-gray-400">Điểm khách quan</span>
-						<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+						<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-800 h-2 rounded-full overflow-hidden">
 							<div
 								class="h-full rounded-full bg-indigo-500"
 								:style="{ width: r.objectiveScore.toFixed(1) + '%' }"
@@ -383,7 +394,7 @@
 					</div>
 					<div class="flex items-center gap-3">
 						<span class="text-xs w-28 text-[#617289] dark:text-gray-400">Điểm chủ quan</span>
-						<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+						<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-800 h-2 rounded-full overflow-hidden">
 							<div
 								class="h-full rounded-full bg-purple-500"
 								:style="{ width: r.subjectiveScore.toFixed(1) + '%' }"
@@ -395,7 +406,7 @@
 					</div>
 					<div class="flex items-center gap-3">
 						<span class="text-xs w-28 text-[#617289] dark:text-gray-400 font-semibold">Điểm tổng</span>
-						<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-700 h-3 rounded-full overflow-hidden">
+						<div class="flex-1 bg-[#f0f2f4] dark:bg-gray-800 h-3 rounded-full overflow-hidden">
 							<div
 								class="h-full rounded-full"
 								:class="scoreBarClass(r.totalScore)"
@@ -466,12 +477,12 @@
 		() => props.state.project.totalBonus * ((100 - props.state.project.devBonusRatio) / 100),
 	);
 
-	function subjectiveCriteria(role: 'dev' | 'tester') {
+	function subjectiveCriteria(role: 'dev' | 'tester' | 'ba') {
 		return [
-			{ key: 'response', label: 'Phản hồi & giao tiếp' },
-			{ key: 'quality', label: role === 'tester' ? 'Chất lượng test case' : 'Chất lượng code' },
-			{ key: 'bugRate', label: role === 'tester' ? 'Khả năng tìm bug' : 'Bug rate' },
-			{ key: 'teamwork', label: 'Teamwork' },
+			{ key: 'response', label: role === 'ba' ? 'Giao tiếp & phản hồi stakeholder' : 'Phản hồi & giao tiếp' },
+			{ key: 'quality', label: role === 'tester' ? 'Chất lượng test case' : role === 'ba' ? 'Chất lượng yêu cầu & giải pháp' : 'Chất lượng code' },
+			{ key: 'bugRate', label: role === 'tester' ? 'Khả năng tìm bug' : role === 'ba' ? 'Tỉ lệ rework từ yêu cầu' : 'Bug rate' },
+			{ key: 'teamwork', label: 'Teamwork & phối hợp' },
 		];
 	}
 
