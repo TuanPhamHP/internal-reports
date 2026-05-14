@@ -116,5 +116,6 @@ Xem thư mục [docs/](docs/) để biết chi tiết:
 - [docs/architecture.md](docs/architecture.md) — Kiến trúc chi tiết và luồng dữ liệu
 - [docs/data-model.md](docs/data-model.md) — Cấu trúc CSV và model TypeScript
 - [docs/story-point-convention.md](docs/story-point-convention.md) — Quy ước về Story point trong quản lý dự án
+- [docs/kpi_bonus_spec.md/](docs/kpi_bonus_spec.md) — Các đầu mục và cách tính kpis.
 - [docs/tasks/](docs/tasks/) — Các task thường gặp khi phát triển
 - [docs/skills/](docs/skills/) — Hướng dẫn kỹ năng cho AI agent

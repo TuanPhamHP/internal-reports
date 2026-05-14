@@ -1,0 +1,131 @@
+{
+  "project": {
+    "name": "Tháp điều hành thông minh",
+    "period": "T4/2026",
+    "totalBonus": 48000000,
+    "devBonusRatio": 70,
+    "managerName": "Phạm Anh Tuấn"
+  },
+  "weights": {
+    "objective": 60,
+    "subjective": 40,
+    "objSp": 40,
+    "objEfficiency": 25,
+    "objEstimation": 20,
+    "objCompletion": 15,
+    "subResponse": 30,
+    "subQuality": 35,
+    "subBugRate": 20,
+    "subTeamwork": 15,
+    "mgrOrganization": 25,
+    "mgrSchedule": 30,
+    "mgrQuality": 25,
+    "mgrTeamDev": 20
+  },
+  "devs": [
+    {
+      "id": "17aedaef-654d-4271-a3f0-e683af739b39",
+      "name": "nguyễn ngọc thắng",
+      "level": "mid",
+      "monthsInProject": 1,
+      "jira": {
+        "sp": 0,
+        "timeSpentHours": 171,
+        "spEstimate": 2.382978723404255,
+        "spActual": 0,
+        "totalTasks": 47,
+        "doneTasks": 0
+      },
+      "subjective": {
+        "response": 5,
+        "quality": 5,
+        "bugRate": 5,
+        "teamwork": 5,
+        "notes": {
+          "response": "",
+          "quality": "",
+          "bugRate": "",
+          "teamwork": ""
+        }
+      }
+    },
+    {
+      "id": "790634c4-03ce-4cdf-ac6a-59f312a6d8d8",
+      "name": "MB - Bình",
+      "level": "senior",
+      "monthsInProject": 1,
+      "jira": {
+        "sp": 4,
+        "timeSpentHours": 78,
+        "spEstimate": 1.7058823529411764,
+        "spActual": 4,
+        "totalTasks": 34,
+        "doneTasks": 1
+      },
+      "subjective": {
+        "response": 5,
+        "quality": 8,
+        "bugRate": 3,
+        "teamwork": 8,
+        "notes": {
+          "response": "",
+          "quality": "",
+          "bugRate": "",
+          "teamwork": ""
+        }
+      }
+    },
+    {
+      "id": "82f4dc55-cd96-4f05-ae1e-4b3e81148808",
+      "name": "Hoan Do",
+      "level": "senior",
+      "monthsInProject": 1,
+      "jira": {
+        "sp": 60,
+        "timeSpentHours": 512.5,
+        "spEstimate": 1.452054794520548,
+        "spActual": 3.75,
+        "totalTasks": 73,
+        "doneTasks": 16
+      },
+      "subjective": {
+        "response": 9,
+        "quality": 9,
+        "bugRate": 3,
+        "teamwork": 10,
+        "notes": {
+          "response": "",
+          "quality": "",
+          "bugRate": "",
+          "teamwork": ""
+        }
+      }
+    }
+  ],
+  "manager": {
+    "organization": {
+      "score1": 9,
+      "score2": 9,
+      "score3": 6,
+      "note": ""
+    },
+    "schedule": {
+      "score1": 10,
+      "score2": 9,
+      "score3": 8,
+      "note": ""
+    },
+    "quality": {
+      "score1": 9,
+      "score2": 7,
+      "score3": 7,
+      "note": ""
+    },
+    "teamDev": {
+      "score1": 9,
+      "score2": 8,
+      "score3": 7,
+      "note": ""
+    }
+  }
+}

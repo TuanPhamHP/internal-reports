@@ -35,6 +35,6 @@ export const KPI_TARGETS: Record<MemberLevel, KpiTarget> = {
 	intern: { label: 'Intern', spPerMonth: 25, completionRate: 70, bugRateMax: 20, timeSpentMinHours: 80 },
 	fresher: { label: 'Fresher', spPerMonth: 25, completionRate: 70, bugRateMax: 20, timeSpentMinHours: 80 },
 	junior: { label: 'Junior', spPerMonth: 30, completionRate: 75, bugRateMax: 15, timeSpentMinHours: 100 },
-	middle: { label: 'Middle', spPerMonth: 50, completionRate: 85, bugRateMax: 10, timeSpentMinHours: 120 },
-	senior: { label: 'Senior', spPerMonth: 70, completionRate: 90, bugRateMax: 5, timeSpentMinHours: 120 },
+	middle: { label: 'Middle', spPerMonth: 70, completionRate: 85, bugRateMax: 10, timeSpentMinHours: 120 },
+	senior: { label: 'Senior', spPerMonth: 90, completionRate: 90, bugRateMax: 5, timeSpentMinHours: 140 },
 };
